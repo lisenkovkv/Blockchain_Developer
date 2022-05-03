@@ -1,20 +1,24 @@
+// описание здесь: https://tproger.ru/translations/blockchain-explained/
+
 'use strict';
+// подключается необходимые библиотеки
 var CryptoJS = require("crypto-js");
 var express = require("express");
 var bodyParser = require('body-parser');
 var WebSocket = require("ws");
 
+//объявляются порты
 var http_port = process.env.HTTP_PORT || 3001;
 var p2p_port = process.env.P2P_PORT || 6001;
-var initialPeers = process.env.PEERS ? process.env.PEERS.split(',') : [];
+var initialPeers = process.env.PEERS ? process.env.PEERS.split(',') : []; //инициалиируются другие участники сети
 
 class Block {
     constructor(index, previousHash, timestamp, data, hash) {
-        this.index = index;
-        this.previousHash = previousHash.toString();
-        this.timestamp = timestamp;
-        this.data = data;
-        this.hash = hash.toString();
+        this.index = index; //номер блока; первый блок имеет индекс=0; не уникален 
+        this.previousHash = previousHash.toString(); //хэш предыдущего блока
+        this.timestamp = timestamp; //когда блок был произведен; соблюдение правила: блок n произведен позже блока n+1
+        this.data = data; //данные, которые хранит блок;
+        this.hash = hash.toString(); // хэш текущего блока; переносится в следующий блок
     }
 }
 
@@ -119,6 +123,7 @@ var addBlock = (newBlock) => {
     }
 };
 
+//здесь можно добавить алгоритм консенсуса
 var isValidNewBlock = (newBlock, previousBlock) => {
     if (previousBlock.index + 1 !== newBlock.index) {
         console.log('invalid index');
